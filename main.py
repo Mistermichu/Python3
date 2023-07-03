@@ -34,3 +34,13 @@ Dodatkowe wymagania:
 aplikacja powinna wyświetlić informację o niemożności wykonania operacji i jej nie wykonać).
 - Zadbaj też o prawidłowe typy danych.
 '''
+
+run_program = True
+while run_program:
+    sample_dic = {
+        "klucz1": 1,
+        "klucz2": 2
+    }
+    print(sample_dic.get("klucz1"))
+    print(sample_dic.get("klucz2"))
+    run_program = False

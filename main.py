@@ -39,6 +39,24 @@ account_balance = 0
 warehouse = {}
 
 
+def menu():
+    print("*" * 100)
+    print("Wybierz akcje:")
+    print("Saldo: 1")
+    print("Sprzedaż: 2")
+    print("Zakup: 3")
+    print("Konto: 4")
+    print("Lista: 5")
+    print("Magazyn: 6")
+    print("Przeglad: 7")
+    print("Koniec: 8")
+    print("*" * 100)
+
+
+def account_balance_note():
+    print(f"Obecny stan konta: {account_balance} PLN")
+
+
 def bad_response():
     print("Blad.")
     print("Sprobuj ponownie.")
@@ -53,12 +71,10 @@ def confirm(user_input):
         confirm_input = (input(": ")).upper()
         if confirm_input == "Y":
             user_confirm = False
-            status_confirm = True
-            return status_confirm
+            return True
         elif confirm_input == "N":
             user_confirm = True
-            status_confirm = False
-            return status_confirm
+            return False
         else:
             bad_response()
             user_confirm = True
@@ -69,8 +85,10 @@ def balance():
     while not isinstance(amount, float):
         try:
             amount = float(input("Podaj kwote do dodania/odjecia z konta: "))
-            status_confirm = confirm(amount)
-            if status_confirm == False:
+            amount_confirm = confirm(amount)
+            if amount_confirm == True:
+                return amount
+            if amount_confirm == False:
                 amount = None
         except ValueError:
             bad_response()
@@ -78,22 +96,23 @@ def balance():
 
 run = True
 while run:
-    print("Wybierz akcje:")
-    print("Saldo: 1")
-    print("Sprzedaż: 2")
-    print("Zakup: 3")
-    print("Konto: 4")
-    print("Lista: 5")
-    print("Magazyn: 6")
-    print("Przeglad: 7")
-    print("Koniec: 8")
+    menu()
     command_check = True
     while command_check:
         try:
             command = int(input(": "))
             if command == 1:
-                balance()
-                command_check = False
+                account_balance_origin = account_balance
+                account_balance += balance()
+                if account_balance < 0:
+                    print("Bład. Stan konta nie moze wynosic mniej niz 0.")
+                    print("Operacja zostala odrzucona.")
+                    account_balance = account_balance_origin
+                    account_balance_note()
+                    command_check = False
+                else:
+                    account_balance_note()
+                    command_check = False
             elif command == 2:
                 print("Komenda 2")
                 command_check = False

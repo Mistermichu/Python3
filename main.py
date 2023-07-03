@@ -34,14 +34,47 @@ Dodatkowe wymagania:
 aplikacja powinna wyświetlić informację o niemożności wykonania operacji i jej nie wykonać).
 - Zadbaj też o prawidłowe typy danych.
 '''
-
 user_action = []
 account_balance = 0
-management = {
-    "stuff": 0,
+warehouse = {}
 
 
-}
+def bad_response():
+    print("Blad.")
+    print("Sprobuj ponownie.")
+
+
+def confirm(user_input):
+    user_confirm = True
+    while user_confirm:
+        print(f"Czy podana wartosc: \"{user_input}\" jest poprawna?")
+        print("Tak: Y")
+        print("Nie: N")
+        confirm_input = (input(": ")).upper()
+        if confirm_input == "Y":
+            user_confirm = False
+            status_confirm = True
+            return status_confirm
+        elif confirm_input == "N":
+            user_confirm = True
+            status_confirm = False
+            return status_confirm
+        else:
+            bad_response()
+            user_confirm = True
+
+
+def balance():
+    amount = None
+    while not isinstance(amount, float):
+        try:
+            amount = float(input("Podaj kwote do dodania/odjecia z konta: "))
+            status_confirm = confirm(amount)
+            if status_confirm == False:
+                amount = None
+        except ValueError:
+            bad_response()
+
 
 run = True
 while run:
@@ -59,7 +92,7 @@ while run:
         try:
             command = int(input(": "))
             if command == 1:
-                print("Komenda 1")
+                balance()
                 command_check = False
             elif command == 2:
                 print("Komenda 2")
@@ -83,8 +116,6 @@ while run:
                 command_check = False
                 run = False
             else:
-                print("Niepoprawna komenda")
-                print("Sprobuj ponownie.")
+                bad_response()
         except ValueError:
-            print("Niepoprawna komenda")
-            print("Sprobuj ponownie.")
+            bad_response()

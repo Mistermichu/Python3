@@ -41,7 +41,7 @@ warehouse = {}
 
 def menu():
     print("*" * 100)
-    print("Wybierz akcje:")
+    print("WYBIERZ AKCJE:")
     print("Saldo: 1")
     print("Sprzedaż: 2")
     print("Zakup: 3")
@@ -54,12 +54,14 @@ def menu():
 
 
 def account_balance_note():
-    print(f"Obecny stan konta: {account_balance} PLN")
+    print(f"Obecny stan konta: {round(account_balance,2)} PLN")
 
 
 def bad_response():
+    print("*" * 10)
     print("Blad.")
     print("Sprobuj ponownie.")
+    print("*" * 10)
 
 
 def confirm(user_input):
@@ -84,7 +86,13 @@ def balance():
     amount = None
     while not isinstance(amount, float):
         try:
-            amount = float(input("Podaj kwote do dodania/odjecia z konta: "))
+            decimal_count = 3
+            while decimal_count > 2:
+                amount = float(
+                    input("Podaj kwote do dodania/odjecia z konta: ").replace(",", "."))
+                decimal_count = len(str(amount).split(".")[1])
+                if decimal_count > 2:
+                    bad_response()
             amount_confirm = confirm(amount)
             if amount_confirm == True:
                 return amount
@@ -96,9 +104,9 @@ def balance():
 
 run = True
 while run:
-    menu()
     command_check = True
     while command_check:
+        menu()
         try:
             command = int(input(": "))
             if command == 1:

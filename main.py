@@ -43,8 +43,8 @@ management = {
 
 }
 
-
-def user_command():
+run = True
+while run:
     print("Wybierz akcje:")
     print("Saldo: 1")
     print("Sprzedaż: 2")
@@ -80,14 +80,11 @@ def user_command():
                 print("Komenda 7")
                 command_check = False
             elif command == 8:
-                run_program = False
                 command_check = False
+                run = False
             else:
                 print("Niepoprawna komenda")
                 print("Sprobuj ponownie.")
         except ValueError:
             print("Niepoprawna komenda")
             print("Sprobuj ponownie.")
-
-
-user_command()

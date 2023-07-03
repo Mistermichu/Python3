@@ -35,12 +35,59 @@ aplikacja powinna wyświetlić informację o niemożności wykonania operacji i 
 - Zadbaj też o prawidłowe typy danych.
 '''
 
-run_program = True
-while run_program:
-    sample_dic = {
-        "klucz1": 1,
-        "klucz2": 2
-    }
-    print(sample_dic.get("klucz1"))
-    print(sample_dic.get("klucz2"))
-    run_program = False
+user_action = []
+account_balance = 0
+management = {
+    "stuff": 0,
+
+
+}
+
+
+def user_command():
+    print("Wybierz akcje:")
+    print("Saldo: 1")
+    print("Sprzedaż: 2")
+    print("Zakup: 3")
+    print("Konto: 4")
+    print("Lista: 5")
+    print("Magazyn: 6")
+    print("Przeglad: 7")
+    print("Koniec: 8")
+    command_check = True
+    while command_check:
+        try:
+            command = int(input(": "))
+            if command == 1:
+                print("Komenda 1")
+                command_check = False
+            elif command == 2:
+                print("Komenda 2")
+                command_check = False
+            elif command == 3:
+                print("Komenda 3")
+                command_check = False
+            elif command == 4:
+                print("Komenda 4")
+                command_check = False
+            elif command == 5:
+                print("Komenda 5")
+                command_check = False
+            elif command == 6:
+                print("Komenda 6")
+                command_check = False
+            elif command == 7:
+                print("Komenda 7")
+                command_check = False
+            elif command == 8:
+                run_program = False
+                command_check = False
+            else:
+                print("Niepoprawna komenda")
+                print("Sprobuj ponownie.")
+        except ValueError:
+            print("Niepoprawna komenda")
+            print("Sprobuj ponownie.")
+
+
+user_command()

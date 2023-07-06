@@ -34,8 +34,8 @@ Dodatkowe wymagania:
 aplikacja powinna wyświetlić informację o niemożności wykonania operacji i jej nie wykonać).
 - Zadbaj też o prawidłowe typy danych.
 '''
-user_action = []
 account_balance = 0
+history = []
 warehouse = {}
 
 
@@ -110,17 +110,9 @@ while run:
         try:
             command = int(input(": "))
             if command == 1:
-                account_balance_origin = account_balance
                 account_balance += balance()
-                if account_balance < 0:
-                    print("Bład. Stan konta nie moze wynosic mniej niz 0.")
-                    print("Operacja zostala odrzucona.")
-                    account_balance = account_balance_origin
-                    account_balance_note()
-                    command_check = False
-                else:
-                    account_balance_note()
-                    command_check = False
+                account_balance_note()
+                command_check = False
             elif command == 2:
                 print("Komenda 2")
                 command_check = False

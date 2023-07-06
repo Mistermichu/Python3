@@ -82,6 +82,27 @@ def confirm(user_input):
             user_confirm = True
 
 
+def history_overview():
+    start = None
+    while not isinstance(start, int):
+        try:
+            print("Podaj początkowy krok przeglądu.")
+            print("Wprowadz 0 aby wyswietlić od początku.")
+            start = int(input(": "))
+        except ValueError:
+            bad_response()
+    stop = None
+    while not isinstance(stop, int):
+        try:
+            print("Podaj końcoy krok przeglądu.")
+            print("Wprowadz 0 aby wyswietlić do końca.")
+            stop = int(input(": "))
+        except ValueError:
+            bad_response()
+    for step, message in enumerate(history):
+        print(f"{step + 1}.: {message}")
+
+
 def balance():
     amount = None
     while not isinstance(amount, float):
@@ -95,6 +116,12 @@ def balance():
                     bad_response()
             amount_confirm = confirm(amount)
             if amount_confirm == True:
+                if amount > 0:
+                    history_message = f"Do konta dodano: {amount} PLN."
+                    history.append(history_message)
+                elif amount < 0:
+                    history_message = f"Z konta odjęto: {amount} PLN."
+                    history.append(history_message)
                 return amount
             if amount_confirm == False:
                 amount = None
@@ -129,7 +156,7 @@ while run:
                 print("Komenda 6")
                 command_check = False
             elif command == 7:
-                print("Komenda 7")
+                history_overview()
                 command_check = False
             elif command == 8:
                 command_check = False

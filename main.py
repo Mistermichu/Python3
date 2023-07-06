@@ -83,24 +83,54 @@ def confirm(user_input):
 
 
 def history_overview():
-    start = None
-    while not isinstance(start, int):
-        try:
-            print("Podaj początkowy krok przeglądu.")
-            print("Wprowadz 0 aby wyswietlić od początku.")
-            start = int(input(": "))
-        except ValueError:
-            bad_response()
-    stop = None
-    while not isinstance(stop, int):
-        try:
-            print("Podaj końcoy krok przeglądu.")
-            print("Wprowadz 0 aby wyswietlić do końca.")
-            stop = int(input(": "))
-        except ValueError:
-            bad_response()
-    for step, message in enumerate(history):
-        print(f"{step + 1}.: {message}")
+    if len(history) == 0:
+        print("Nie wykonano żadnych operacji.")
+    else:
+        start = None
+        while not isinstance(start, int):
+            try:
+                print("Podaj początkowy krok przeglądu.")
+                print("Wprowadz 0 aby wyswietlić od początku.")
+                start = int(input(": "))
+                if start < 0:
+                    bad_response()
+                    start = None
+                elif start > len(history):
+                    print(
+                        f"Bład. Dotychczasowa liczba wykonanych kroków: {len(history)}")
+                    start = None
+            except ValueError:
+                bad_response()
+                start = None
+        stop = None
+        while not isinstance(stop, int):
+            try:
+                print("Podaj końcowy krok przeglądu.")
+                print("Wprowadz 0 aby wyswietlić do końca.")
+                stop = int(input(": "))
+                if stop < 0:
+                    bad_response()
+                    stop = None
+                elif stop == 0:
+                    stop = len(history)
+                elif stop < start:
+                    print(
+                        "Błąd. Krok końcowy nie może być mniejszy niż krok początkowy.")
+                    stop = None
+                elif stop > len(history):
+                    print(
+                        f"Bład. Dotychczasowa liczba wykonanych kroków: {len(history)}")
+                    stop = None
+            except ValueError:
+                bad_response()
+        if start >= 1:
+            start -= 1
+        if stop == 0:
+            stop = None
+        print("*" * 10 + "HISTORIA" + "*" * 10)
+        for step, message in enumerate(history[start:stop]):
+            print(f"{step + start + 1}.: {message}")
+        print("*" * 30)
 
 
 def balance():

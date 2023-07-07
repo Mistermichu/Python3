@@ -150,36 +150,54 @@ Saldo konta po zakończeniu operacji „zakup” nie może być ujemne.'''
 
 
 def buy():
-    item_name = str(input("Podaj nazwe przedmiotu: "))
-    cost_price = None
-    while not isinstance(cost_price, float):
-        try:
-            cost_message = "Podaj cenę zakupu przedmiotu \"" + item_name + "\": "
-            cost_price = decimal_count_check(cost_price, cost_message)
-            cost_confirm = confirm(cost_price)
-            if cost_confirm == True:
-                if cost_price < 0:
-                    print("Bład, cena zakupu nie może być mniejsza niż 0")
-                    cost_price = None
-            if cost_confirm == False:
-                cost_price = None
-        except ValueError:
-            bad_response()
-    item_quantity = None
-    while not isinstance(item_quantity, int):
-        try:
-            item_quantity = int(
-                input("Podaj liczbe zakupionych przedmiotów: "))
-            item_quantity_confirm = confirm(item_quantity)
-            if item_quantity_confirm == True:
-                if item_quantity <= 0:
-                    print(
-                        "Bład. Liczba zakupionych przedmiotów nie może być mniejsza lub równa 0.")
+    item_name = None
+    while not isinstance(item_name, str):
+        item_name = str(input("Podaj nazwe przedmiotu: "))
+        item_name_confirm = confirm(item_name)
+        if item_name_confirm == False:
+            item_name = None
+    balance_check = False
+    while not balance_check:
+        item_quantity = None
+        while not isinstance(item_quantity, int):
+            try:
+                item_quantity = int(
+                    input("Podaj liczbe zakupionych przedmiotów: "))
+                item_quantity_confirm = confirm(item_quantity)
+                if item_quantity_confirm == True:
+                    if item_quantity <= 0:
+                        print(
+                            "Bład. Liczba zakupionych przedmiotów nie może być mniejsza lub równa 0.")
+                        item_quantity = None
+                if item_quantity_confirm == False:
                     item_quantity = None
-            if item_quantity_confirm == False:
-                item_quantity = None
-        except ValueError:
-            bad_response()
+            except ValueError:
+                bad_response()
+        cost_price = None
+        while not isinstance(cost_price, float):
+            try:
+                cost_message = "Podaj cenę zamówienia: \"" + \
+                    item_name + "\", ilość: " + str(item_quantity) + ": "
+                cost_price = decimal_count_check(cost_price, cost_message)
+                cost_confirm = confirm(cost_price)
+                if cost_confirm == True:
+                    if cost_price <= 0:
+                        print("Bład, cena nie może być mniejsza lub równa 0")
+                        cost_price = None
+                if cost_confirm == False:
+                    cost_price = None
+            except ValueError:
+                bad_response()
+        purchase_price = item_quantity * cost_price
+        if account_balance - purchase_price < 0:
+            print(
+                f"Błąd. Nie można zakupić przedmiotu \"{item_name}\" w ilości: {item_quantity}, ponieważ saldo konta nie może być ujemne")
+            print("Spróbuj ponownie.")
+            cost_price = None
+            item_quantity = None
+            balance_check = False
+        else:
+            balance_check = True
 
 
 def balance():

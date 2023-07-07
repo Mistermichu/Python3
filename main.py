@@ -127,7 +127,7 @@ def history_overview():
             start -= 1
         if stop == 0:
             stop = None
-        print("*" * 10 + "HISTORIA" + "*" * 10)
+        print("*" * 10 + " HISTORIA " + "*" * 10)
         for step, message in enumerate(history[start:stop]):
             print(f"{step + start + 1}.: {message}")
         print("*" * 30)
@@ -177,7 +177,8 @@ while run:
                 print("Komenda 3")
                 command_check = False
             elif command == 4:
-                print("Komenda 4")
+                print("Obecny stan konta:")
+                print(f"{round(account_balance,2)} PLN")
                 command_check = False
             elif command == 5:
                 print("Komenda 5")

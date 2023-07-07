@@ -133,10 +133,6 @@ def history_overview():
         print("*" * 30)
 
 
-'''3. zakup - Program pobiera nazwę produktu, cenę oraz liczbę sztuk. Produkt zostaje dodany do magazynu, jeśli go nie było. Obliczenia są wykonane odwrotnie do komendy "sprzedaz". 
-Saldo konta po zakończeniu operacji „zakup” nie może być ujemne.'''
-
-
 def decimal_count_check(number, message):
     decimal_count = 3
     while decimal_count > 2:
@@ -149,9 +145,41 @@ def decimal_count_check(number, message):
             return number
 
 
+'''3. zakup - Program pobiera nazwę produktu, cenę oraz liczbę sztuk. Produkt zostaje dodany do magazynu, jeśli go nie było. Obliczenia są wykonane odwrotnie do komendy "sprzedaz". 
+Saldo konta po zakończeniu operacji „zakup” nie może być ujemne.'''
+
+
 def buy():
     item_name = str(input("Podaj nazwe przedmiotu: "))
     cost_price = None
+    while not isinstance(cost_price, float):
+        try:
+            cost_message = "Podaj cenę zakupu przedmiotu \"" + item_name + "\": "
+            cost_price = decimal_count_check(cost_price, cost_message)
+            cost_confirm = confirm(cost_price)
+            if cost_confirm == True:
+                if cost_price < 0:
+                    print("Bład, cena zakupu nie może być mniejsza niż 0")
+                    cost_price = None
+            if cost_confirm == False:
+                cost_price = None
+        except ValueError:
+            bad_response()
+    item_quantity = None
+    while not isinstance(item_quantity, int):
+        try:
+            item_quantity = int(
+                input("Podaj liczbe zakupionych przedmiotów: "))
+            item_quantity_confirm = confirm(item_quantity)
+            if item_quantity_confirm == True:
+                if item_quantity <= 0:
+                    print(
+                        "Bład. Liczba zakupionych przedmiotów nie może być mniejsza lub równa 0.")
+                    item_quantity = None
+            if item_quantity_confirm == False:
+                item_quantity = None
+        except ValueError:
+            bad_response()
 
 
 def balance():
@@ -190,7 +218,7 @@ while run:
                 print("Komenda 2")
                 command_check = False
             elif command == 3:
-                print("Komenda 3")
+                buy()
                 command_check = False
             elif command == 4:
                 print("Obecny stan konta:")

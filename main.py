@@ -16,12 +16,12 @@ Po wprowadzeniu odpowiedniej komendy, aplikacja zachowuje się w unikalny sposó
 ***DONE*** 1. saldo - Program pobiera kwotę do dodania lub odjęcia z konta.
 2. sprzedaż - Program pobiera nazwę produktu, cenę oraz liczbę sztuk. Produkt musi znajdować się w magazynie. 
 Obliczenia respektuje względem konta i magazynu (np. produkt "rower" o cenie 100 i jednej sztuce spowoduje odjęcie z magazynu produktu "rower" oraz dodanie do konta kwoty 100).
-3. zakup - Program pobiera nazwę produktu, cenę oraz liczbę sztuk. Produkt zostaje dodany do magazynu, jeśli go nie było. Obliczenia są wykonane odwrotnie do komendy "sprzedaz". 
+***DONE*** 3. zakup - Program pobiera nazwę produktu, cenę oraz liczbę sztuk. Produkt zostaje dodany do magazynu, jeśli go nie było. Obliczenia są wykonane odwrotnie do komendy "sprzedaz". 
 Saldo konta po zakończeniu operacji „zakup” nie może być ujemne.
 ***DONE*** 4. konto - Program wyświetla stan konta.
 5. lista - Program wyświetla całkowity stan magazynu wraz z cenami produktów i ich ilością.
 6. magazyn - Program wyświetla stan magazynu dla konkretnego produktu. Należy podać jego nazwę.
-7. przegląd - Program pobiera dwie zmienne „od” i „do”, na ich podstawie wyświetla wszystkie wprowadzone akcje zapisane pod indeksami od „od” do „do”. 
+***DONE*** 7. przegląd - Program pobiera dwie zmienne „od” i „do”, na ich podstawie wyświetla wszystkie wprowadzone akcje zapisane pod indeksami od „od” do „do”. 
 Jeżeli użytkownik podał pustą wartość „od” lub „do”, program powinien wypisać przegląd od początku lub/i do końca. 
 Jeżeli użytkownik podał zmienne spoza zakresu, program powinien o tym poinformować i wyświetlić liczbę zapisanych komend (żeby pozwolić użytkownikowi wybrać odpowiedni zakres).
 ***DONE*** 8. koniec - Aplikacja kończy działanie.
@@ -36,7 +36,7 @@ aplikacja powinna wyświetlić informację o niemożności wykonania operacji i 
 '''
 account_balance = 0
 history = []
-warehouse = {}
+inventory = {}
 
 
 def menu():
@@ -156,10 +156,6 @@ def check_if_number_positive(confirmation_status, number, message):
             return number
 
 
-'''3. zakup - Program pobiera nazwę produktu, cenę oraz liczbę sztuk. Produkt zostaje dodany do magazynu, jeśli go nie było. Obliczenia są wykonane odwrotnie do komendy "sprzedaz". 
-Saldo konta po zakończeniu operacji „zakup” nie może być ujemne.'''
-
-
 def buy():
     item_name = None
     while not isinstance(item_name, str):
@@ -211,6 +207,19 @@ def buy():
             bad_response()
     history_message = f"Zakupiono przedmiot: \"{item_name}\", w ilości: {item_quantity}. Cena za sztuke: {round(cost_price, 2)} PLN. Łączna cena za zamówienie: {round(purchase_price, 2)} PLN. Cene sprzedaży produktu ustalono na: {round(list_price, 2)} PLN."
     history.append(history_message)
+    print(history_message)
+    if item_name not in inventory:
+        inventory[item_name] = {
+            "list_price": list_price,
+            "quantity": item_quantity
+        }
+    else:
+        inventory[item_name]["list_price"] = list_price
+        inventory[item_name]["quantity"] += item_quantity
+    available_item_quantity = inventory.get(item_name, {}).get("quantity")
+    print(
+        f"Dostępna ilość przedmiotu \"{item_name}\": {available_item_quantity}")
+    return purchase_price
 
 
 def balance():
@@ -234,6 +243,20 @@ def balance():
             bad_response()
 
 
+def list_overview():
+    print("*" * 30)
+    print("PEŁEN WYKAZ MAGAZYNU")
+    print("*" * 10)
+    for item_name in inventory:
+        quantity = inventory.get(item_name, {}).get("quantity")
+        list_price = inventory.get(item_name, {}).get("list_price")
+        print("*" * 10)
+        print(f"Przedmiot: {item_name}")
+        print(f"Liczba dostępnych sztuk: {quantity}")
+        print(f"Cena: {round(list_price, 2)} PLN")
+    print("*" * 30)
+
+
 run = True
 while run:
     command_check = True
@@ -249,14 +272,14 @@ while run:
                 print("Komenda 2")
                 command_check = False
             elif command == 3:
-                buy()
+                account_balance -= buy()
+                account_balance_note()
                 command_check = False
             elif command == 4:
-                print("Obecny stan konta:")
-                print(f"{round(account_balance,2)} PLN")
+                account_balance_note()
                 command_check = False
             elif command == 5:
-                print("Komenda 5")
+                list_overview()
                 command_check = False
             elif command == 6:
                 print("Komenda 6")

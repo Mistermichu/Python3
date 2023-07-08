@@ -145,6 +145,17 @@ def decimal_count_check(number, message):
             return number
 
 
+def check_if_number_positive(confirmation_status, number, message):
+    if confirmation_status == False:
+        return None
+    else:
+        if number <= 0:
+            print(message)
+            return None
+        else:
+            return number
+
+
 '''3. zakup - Program pobiera nazwę produktu, cenę oraz liczbę sztuk. Produkt zostaje dodany do magazynu, jeśli go nie było. Obliczenia są wykonane odwrotnie do komendy "sprzedaz". 
 Saldo konta po zakończeniu operacji „zakup” nie może być ujemne.'''
 
@@ -164,28 +175,18 @@ def buy():
                 item_quantity = int(
                     input("Podaj liczbe zakupionych przedmiotów: "))
                 item_quantity_confirm = confirm(item_quantity)
-                if item_quantity_confirm == True:
-                    if item_quantity <= 0:
-                        print(
-                            "Bład. Liczba zakupionych przedmiotów nie może być mniejsza lub równa 0.")
-                        item_quantity = None
-                if item_quantity_confirm == False:
-                    item_quantity = None
+                item_quantity = check_if_number_positive(
+                    item_quantity_confirm, item_quantity, "Bład. Liczba kupowanych sztuk nie może być mniejsza lub równa 0.")
             except ValueError:
                 bad_response()
         cost_price = None
         while not isinstance(cost_price, float):
             try:
-                cost_message = "Podaj cenę zamówienia: \"" + \
-                    item_name + "\", ilość: " + str(item_quantity) + ": "
+                cost_message = "Podaj cenę zakupu dla jednej sztuki towaru: "
                 cost_price = decimal_count_check(cost_price, cost_message)
                 cost_confirm = confirm(cost_price)
-                if cost_confirm == True:
-                    if cost_price <= 0:
-                        print("Bład, cena nie może być mniejsza lub równa 0")
-                        cost_price = None
-                if cost_confirm == False:
-                    cost_price = None
+                cost_price = check_if_number_positive(
+                    cost_confirm, cost_price, "Bład. Cena zakupu nie może być mniejsza lub równa 0.")
             except ValueError:
                 bad_response()
         purchase_price = item_quantity * cost_price
@@ -198,6 +199,18 @@ def buy():
             balance_check = False
         else:
             balance_check = True
+    list_price = None
+    while not isinstance(list_price, float):
+        try:
+            list_message = "Podaj docelową cene sprzedaży 1 sztuki towaru: "
+            list_price = decimal_count_check(list_price, list_message)
+            list_price_confirm = confirm(list_price)
+            list_price = check_if_number_positive(
+                list_price_confirm, list_price, "Bład. Cena sprzedaży nie może być mniejsza lub równa 0.")
+        except ValueError:
+            bad_response()
+    history_message = f"Zakupiono przedmiot: \"{item_name}\", w ilości: {item_quantity}. Cena za sztuke: {round(cost_price, 2)} PLN. Łączna cena za zamówienie: {round(purchase_price, 2)} PLN. Cene sprzedaży produktu ustalono na: {round(list_price, 2)} PLN."
+    history.append(history_message)
 
 
 def balance():

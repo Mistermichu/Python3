@@ -208,15 +208,17 @@ def buy():
     history_message = f"Zakupiono przedmiot: \"{item_name}\", w ilości: {item_quantity}. Cena za sztuke: {round(cost_price, 2)} PLN. Łączna cena za zamówienie: {round(purchase_price, 2)} PLN. Cene sprzedaży produktu ustalono na: {round(list_price, 2)} PLN."
     history.append(history_message)
     print(history_message)
-    if item_name not in inventory:
-        inventory[item_name] = {
+    if item_name.upper() not in inventory:
+        inventory[item_name.upper()] = {
+            "item_name": item_name,
             "list_price": list_price,
             "quantity": item_quantity
         }
     else:
-        inventory[item_name]["list_price"] = list_price
-        inventory[item_name]["quantity"] += item_quantity
-    available_item_quantity = inventory.get(item_name, {}).get("quantity")
+        inventory[item_name.upper()]["list_price"] = list_price
+        inventory[item_name.upper()]["quantity"] += item_quantity
+    available_item_quantity = inventory.get(
+        item_name.upper(), {}).get("quantity")
     print(
         f"Dostępna ilość przedmiotu \"{item_name}\": {available_item_quantity}")
     return purchase_price
@@ -248,10 +250,11 @@ def list_overview():
     print("PEŁEN WYKAZ MAGAZYNU")
     print("*" * 10)
     for item_name in inventory:
+        name = inventory.get(item_name, {}).get("item_name")
         quantity = inventory.get(item_name, {}).get("quantity")
         list_price = inventory.get(item_name, {}).get("list_price")
         print("*" * 10)
-        print(f"Przedmiot: {item_name}")
+        print(f"Przedmiot: {name}")
         print(f"Liczba dostępnych sztuk: {quantity}")
         print(f"Cena: {round(list_price, 2)} PLN")
     print("*" * 30)
@@ -260,7 +263,7 @@ def list_overview():
 def inventory_overview():
     item = None
     while not item:
-        item = str(input("Podaj nazwe przedmiotu: "))
+        item = str(input("Podaj nazwe przedmiotu: ")).upper()
         if item not in inventory:
             print("Nie ma takiego przedmiotu w magazynie.")
             item = None
@@ -276,7 +279,8 @@ def inventory_overview():
                 bad_response()
         else:
             quantity = inventory[item]["quantity"]
-            print(f"Stan magazynu dla przedmiotu \"{item}\": {quantity}.")
+            name = inventory.get(item, {}).get("item_name")
+            print(f"Stan magazynu dla przedmiotu \"{name}\": {quantity}.")
 
 
 run = True

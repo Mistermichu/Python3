@@ -1,39 +1,3 @@
-'''
-Napisz program, który będzie rejestrował operacje na koncie firmy i stan magazynu.
-
-Program po uruchomieniu wyświetla informację o dostępnych komendach:
--Saldo
--Sprzedaż
--Zakup
--Konto
--Lista
--Magazyn
--Przegląd
--Koniec
-
-
-Po wprowadzeniu odpowiedniej komendy, aplikacja zachowuje się w unikalny sposób dla każdej z nich:
-***DONE*** 1. saldo - Program pobiera kwotę do dodania lub odjęcia z konta.
-2. sprzedaż - Program pobiera nazwę produktu, cenę oraz liczbę sztuk. Produkt musi znajdować się w magazynie. 
-Obliczenia respektuje względem konta i magazynu (np. produkt "rower" o cenie 100 i jednej sztuce spowoduje odjęcie z magazynu produktu "rower" oraz dodanie do konta kwoty 100).
-***DONE*** 3. zakup - Program pobiera nazwę produktu, cenę oraz liczbę sztuk. Produkt zostaje dodany do magazynu, jeśli go nie było. Obliczenia są wykonane odwrotnie do komendy "sprzedaz". 
-Saldo konta po zakończeniu operacji „zakup” nie może być ujemne.
-***DONE*** 4. konto - Program wyświetla stan konta.
-***DONE*** 5. lista - Program wyświetla całkowity stan magazynu wraz z cenami produktów i ich ilością.
-***DONE*** 6. magazyn - Program wyświetla stan magazynu dla konkretnego produktu. Należy podać jego nazwę.
-***DONE*** 7. przegląd - Program pobiera dwie zmienne „od” i „do”, na ich podstawie wyświetla wszystkie wprowadzone akcje zapisane pod indeksami od „od” do „do”. 
-Jeżeli użytkownik podał pustą wartość „od” lub „do”, program powinien wypisać przegląd od początku lub/i do końca. 
-Jeżeli użytkownik podał zmienne spoza zakresu, program powinien o tym poinformować i wyświetlić liczbę zapisanych komend (żeby pozwolić użytkownikowi wybrać odpowiedni zakres).
-***DONE*** 8. koniec - Aplikacja kończy działanie.
-
-Dodatkowe wymagania:
-- Aplikacja od uruchomienia działa tak długo, aż podamy komendę "koniec".
-- Komendy saldo, sprzedaż i zakup są zapamiętywane przez program, aby móc użyć komendy "przeglad".
-- Po wykonaniu dowolnej komendy (np. "saldo") aplikacja ponownie wyświetla informację o dostępnych komendach, a także prosi o wprowadzenie jednej z nich.
-- Zadbaj o błędy, które mogą się pojawić w trakcie wykonywania operacji (np. przy komendzie "zakup" jeśli dla produktu podamy ujemną kwotę, 
-aplikacja powinna wyświetlić informację o niemożności wykonania operacji i jej nie wykonać).
-- Zadbaj też o prawidłowe typy danych.
-'''
 account_balance = 0
 history = []
 inventory = {}
@@ -292,49 +256,47 @@ def inventory_overview():
 
 def sell():
     item_to_sell = None
-    while not item_to_sell:
+    while not isinstance(item_to_sell, str):
         item_to_sell = str(
-            input("Podaj nazwe przedmiotu, który chcesz sprzedać: ")).upper()
+            input("Podaj nazwę sprzedawanego przedmiotu: ")).upper()
         if item_to_sell not in inventory:
-            user_confirm = item_not_in_inventory()
-            if not user_confirm:
-                break
-            else:
-                item_to_sell = None
+            print("Podany produkt nie znajduje się w magazynie.")
+            item_to_sell = None
         else:
             item_name = inventory.get(item_to_sell, {}).get("item_name")
             list_price = inventory.get(item_to_sell, {}).get("list_price")
             quantity = inventory.get(item_to_sell, {}).get("quantity")
-            print(
-                f"Przedmiot \"{item_name}\". Liczba dostępnych sztutk: {quantity}. Cena sprzedaży: {round(list_price, 2)} PLN.")
-            quantity_to_sell = None
-            while not quantity_to_sell:
+            selling_quantity = None
+            while not isinstance(selling_quantity, int):
                 try:
-                    quantity_to_sell = int(
-                        input("Podaj liczbe sprzedawanych sztuk: "))
-                    quantity_to_sell_confirm = confirm(quantity_to_sell)
-                    quantity_to_sell = check_if_number_positive(
-                        quantity_to_sell_confirm, quantity_to_sell, "Bład. Liczba sprzedawanych sztuk nie może być mniejsza lub równa 0.")
-                    if isinstance(quantity_to_sell, int):
-                        if quantity - quantity_to_sell < 0:
-                            print(
-                                "Bład. Liczba sprzedawanych sztuk, przekracza liczbę sztuk dostępnych na magazynie.")
-                            quantity_to_sell = None
+                    selling_quantity = int(
+                        input("Podaj liczbe sprzedawanych przedmiotów: "))
+                    confirm_selling_quantity = confirm(selling_quantity)
+                    selling_quantity = check_if_number_positive(
+                        confirm_selling_quantity, selling_quantity, "Błąd. Liczba sprzedawanych prouktów nie może być mniejsza lub równa 0.")
                 except ValueError:
                     bad_response()
-        if not user_confirm:
-            break
-        message = f"Przedmiot: {item_name}. Liczba sprzedawanych sztuk: {quantity}. Cena sprzedaży za sztukę: {round(list_price, 2)} PLN. Pozostanie: {quantity - quantity_to_sell}"
-        user_confirm = confirm(message)
-        if not user_confirm:
-            break
-        else:
-            selling_price = quantity_to_sell * list_price
-            quantity_left = quantity - quantity_to_sell
-            inventory[item_to_sell]["quantity"] = quantity_left
-            history_message = f"Sprzedano przedmiot \"{item_name}\" w liczbie: {quantity_to_sell}. Łączna cena sprzedaży: {round(selling_price, 2)}."
-            history.append(history_message)
-            return selling_price
+                    selling_quantity = None
+                if selling_quantity == None:
+                    continue
+                else:
+                    available_quantity_left = quantity - selling_quantity
+                    if available_quantity_left >= 0:
+                        break
+                    else:
+                        print(
+                            "Brak wystarczającej ilości dostępnych produktów do sprzedaży. Spróbuj sprzedać mniejszą ilość.")
+                        selling_quantity = None
+            selling_price = selling_quantity * list_price
+            message = f"Sprzedaż produktu \"{item_name}\". Ilość sprzedawanych sztuk: {selling_quantity}. Łączna cena sprzedaży: {round(selling_price, 2)} PLN"
+            confirm_selling = confirm(message)
+            if not confirm_selling:
+                item_to_sell = None
+            else:
+                inventory[item_to_sell]["quantity"] = available_quantity_left
+                history_message = f"Sprzedano \"{item_name}\" w ilość sztuk: {selling_quantity}. Cena sprzedaży: {round(selling_price, 2)} PLN."
+                history.append(history_message)
+                return selling_price
 
 
 run = True

@@ -13,7 +13,8 @@ def menu():
     print("Lista: 5")
     print("Magazyn: 6")
     print("Przeglad: 7")
-    print("Koniec: 8")
+    print("Korekty w magazynie: 8")
+    print("Koniec: 9")
     print("*" * 100)
 
 
@@ -134,6 +135,32 @@ def item_not_in_inventory():
         bad_response()
 
 
+def continue_request():
+    print("Czy chcesz kontynuować edycje przedmiotów?")
+    print("Tak: Y")
+    print("Nie: N")
+    user_confirm = str(input(": ")).upper()
+    if user_confirm == "N":
+        return False
+    elif user_confirm == "Y":
+        return True
+    else:
+        bad_response()
+
+
+def break_point():
+    print("Czy chcesz przerwać?")
+    print("Tak: Y")
+    print("Nie: N")
+    user_confirm = str(input(": ")).upper()
+    if user_confirm == "N":
+        return False
+    elif user_confirm == "Y":
+        return True
+    else:
+        bad_response()
+
+
 def buy():
     item_name = None
     while not isinstance(item_name, str):
@@ -168,6 +195,10 @@ def buy():
             print(
                 f"Błąd. Nie można zakupić przedmiotu \"{item_name}\" w ilości: {item_quantity}, ponieważ saldo konta nie może być ujemne")
             print("Spróbuj ponownie.")
+            stop_request = break_point()
+            if stop_request:
+                purchase_price = 0
+                return purchase_price
             cost_price = None
             item_quantity = None
             balance_check = False
@@ -273,7 +304,7 @@ def sell():
                         input("Podaj liczbe sprzedawanych przedmiotów: "))
                     confirm_selling_quantity = confirm(selling_quantity)
                     selling_quantity = check_if_number_positive(
-                        confirm_selling_quantity, selling_quantity, "Błąd. Liczba sprzedawanych prouktów nie może być mniejsza lub równa 0.")
+                        confirm_selling_quantity, selling_quantity, "Błąd. Liczba sprzedawanych produktów nie może być mniejsza lub równa 0.")
                 except ValueError:
                     bad_response()
                     selling_quantity = None
@@ -286,6 +317,10 @@ def sell():
                     else:
                         print(
                             "Brak wystarczającej ilości dostępnych produktów do sprzedaży. Spróbuj sprzedać mniejszą ilość.")
+                        stop_request = break_point()
+                        if stop_request:
+                            selling_price = 0
+                            return selling_price
                         selling_quantity = None
             selling_price = selling_quantity * list_price
             message = f"Sprzedaż produktu \"{item_name}\". Ilość sprzedawanych sztuk: {selling_quantity}. Łączna cena sprzedaży: {round(selling_price, 2)} PLN"
@@ -297,6 +332,76 @@ def sell():
                 history_message = f"Sprzedano \"{item_name}\" w ilość sztuk: {selling_quantity}. Cena sprzedaży: {round(selling_price, 2)} PLN."
                 history.append(history_message)
                 return selling_price
+
+
+def inventory_correction():
+    item = str(input("Wprowadź nazwę przedmiotu: "))
+    if item.upper() not in inventory:
+        print(f"W magazynie nie ma przedmiotu o nazwie: \"{item}\"")
+    else:
+        old_item_name = inventory.get(item.upper(), {}).get("item_name")
+        old_list_price = inventory.get(item.upper(), {}).get("list_price")
+        old_quantity = inventory.get(item.upper(), {}).get("quantity")
+        print("*" * 10)
+        print(
+            f"Przedmiot: {old_item_name}, Cena: {round(old_list_price, 2)} PLN, Liczba dostępnych sztuk: {old_quantity}")
+        print("*" * 10)
+        history_message = f"Rozpoczeto edycje przedmiotu \"{item}\"."
+        history.append(history_message)
+        user_confirm = True
+        while user_confirm:
+            print("wprowadz komende do edycji")
+            print("Zmiana nazwy przedmiotu: NAZWA")
+            print("Zmiana ceny: CENA")
+            print("Zmiana ilości dostępnych sztuk: LICZBA")
+            print("Wyjdź: EXIT")
+            command = str(input(": ")).upper()
+            if command == "NAZWA":
+                new_item_name = str(input("Wprowadź nową nazwę: "))
+                item_data = inventory.pop(item.upper())
+                item_data["item_name"] = new_item_name
+                inventory[new_item_name.upper()] = item_data
+                history_message = f"Ustawiono nową nazwę przedmiotu: \"{new_item_name}\"."
+                history.append(history_message)
+                print("Zmiana nazwy przedmiotu. Edycja zostaje zamknięta.")
+                user_confirm = False
+            elif command == "CENA":
+                new_list_price = None
+                while not isinstance(new_list_price, float):
+                    try:
+                        list_message = "Podaj nową cene sprzedaży 1 sztuki towaru: "
+                        new_list_price = decimal_count_check(
+                            new_list_price, list_message)
+                        list_price_confirm = confirm(new_list_price)
+                        new_list_price = check_if_number_positive(
+                            list_price_confirm, new_list_price, "Bład. Cena sprzedaży nie może być mniejsza lub równa 0.")
+                    except ValueError:
+                        bad_response()
+                inventory[item.upper()]["list_price"] = new_list_price
+                history_message = f"Ustawiono nową cenę przedmiotu: {round(new_list_price, 2)} PLN."
+                history.append(history_message)
+                user_confirm = continue_request()
+            elif command == "LICZBA":
+                new_quantity = None
+                while not isinstance(new_quantity, int):
+                    try:
+                        new_quantity = int(
+                            input("Podaj liczbe dostępnych przedmiotów: "))
+                        item_quantity_confirm = confirm(new_quantity)
+                        new_quantity = check_if_number_positive(
+                            item_quantity_confirm, new_quantity, "Bład. Liczba dostępnych sztuk nie może być mniejsza lub równa 0.")
+                    except ValueError:
+                        bad_response()
+                inventory[item.upper()]["quantity"] = new_quantity
+                history_message = f"Zmieniono liczbę dostepnych sztuk przedmiotu: {new_quantity}"
+                history.append(history_message)
+                user_confirm = continue_request()
+            elif command == "EXIT":
+                user_confirm = False
+            else:
+                bad_response()
+        history_message = f"Zakończono edycje przedmiotu: \"{item}\""
+        history.append(history_message)
 
 
 run = True
@@ -331,6 +436,9 @@ while run:
                 history_overview()
                 command_check = False
             elif command == 8:
+                inventory_correction()
+                command_check = False
+            elif command == 9:
                 command_check = False
                 run = False
             else:

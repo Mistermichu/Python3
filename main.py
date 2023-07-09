@@ -257,6 +257,28 @@ def list_overview():
     print("*" * 30)
 
 
+def inventory_overview():
+    item = None
+    while not item:
+        item = str(input("Podaj nazwe przedmiotu: "))
+        if item not in inventory:
+            print("Nie ma takiego przedmiotu w magazynie.")
+            item = None
+            print("Czy spróbować ponownie?")
+            print("Tak: Y")
+            print("Nie: N")
+            user_confirm = str(input(": ")).upper()
+            if user_confirm == "N":
+                break
+            elif user_confirm == "Y":
+                continue
+            else:
+                bad_response()
+        else:
+            quantity = inventory[item]["quantity"]
+            print(f"Stan magazynu dla przedmiotu \"{item}\": {quantity}.")
+
+
 run = True
 while run:
     command_check = True
@@ -282,7 +304,7 @@ while run:
                 list_overview()
                 command_check = False
             elif command == 6:
-                print("Komenda 6")
+                inventory_overview()
                 command_check = False
             elif command == 7:
                 history_overview()

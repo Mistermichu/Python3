@@ -9,7 +9,8 @@ class FileHandler:
 
     def load_history(self, history_file):
         with open(history_file, "r") as history_data:
-            history = history_data.readlines()
+            history = [line.strip()
+                       for line in history_data.readlines() if line.strip()]
         return history
 
     def load_balance(self, balance_file):
@@ -39,7 +40,7 @@ class FileWriter:
             balance_data.write(str(balance))
 
     def save_inventory(self, inventory):
-        with open(self, inventory) as inventory_data:
+        with open(self.inventory_file, "w") as inventory_data:
             json.dump(inventory, inventory_data)
 
 
@@ -332,7 +333,7 @@ def sell():
             input("Podaj nazwę sprzedawanego przedmiotu: ")).upper()
         if item_to_sell not in inventory:
             print("Podany produkt nie znajduje się w magazynie.")
-            item_to_sell = None
+            return 0
         else:
             item_name = inventory.get(item_to_sell, {}).get("item_name")
             list_price = inventory.get(item_to_sell, {}).get("list_price")
@@ -449,9 +450,6 @@ load_data = FileHandler("history.txt", "balance.txt", "inventory.json")
 history = load_data.history
 account_balance = load_data.account_balance
 inventory = load_data.inventory
-print(history)
-print(account_balance)
-print(inventory)
 while run:
     command_check = True
     while command_check:
